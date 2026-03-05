@@ -503,6 +503,9 @@
 
             const themed = themeData.map(t => ({ ...t, votes: votes['votes_' + t.id] || 0 }));
             const sorted = [...themed].sort((a, b) => b.votes - a.votes || a.id - b.id);
+            // #region agent log
+            fetch('http://127.0.0.1:7410/ingest/9cbcc94d-8c1f-47e5-81cf-3f04dd82ce1b',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b42af6'},body:JSON.stringify({sessionId:'b42af6',location:'index.html:render',message:'Render called - sorted order',data:{sortedOrder:sorted.map(function(t){return {id:t.id,title:t.title,votes:t.votes}}),rawVotes:votes},timestamp:Date.now(),hypothesisId:'D'})}).catch(function(){});
+            // #endregion
             const maxV   = Math.max(...sorted.map(t => t.votes), 1);
 
             container.innerHTML = '';
@@ -530,13 +533,19 @@
                     '</div>';
 
                 const btn = item.querySelector('.vote-btn');
+                // #region agent log
                 btn.addEventListener('click', function (e) {
                     e.stopPropagation();
+                    fetch('http://127.0.0.1:7410/ingest/9cbcc94d-8c1f-47e5-81cf-3f04dd82ce1b',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b42af6'},body:JSON.stringify({sessionId:'b42af6',location:'index.html:btn-click',message:'Button clicked',data:{themeId:theme.id,themeTitle:theme.title,themeVotes:theme.votes},timestamp:Date.now(),hypothesisId:'A'})}).catch(function(){});
                     handleVote(theme.id);
                 });
+                // #endregion
+                // #region agent log
                 item.addEventListener('click', function () {
+                    fetch('http://127.0.0.1:7410/ingest/9cbcc94d-8c1f-47e5-81cf-3f04dd82ce1b',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b42af6'},body:JSON.stringify({sessionId:'b42af6',location:'index.html:item-click',message:'Item row clicked',data:{themeId:theme.id,themeTitle:theme.title,themeVotes:theme.votes},timestamp:Date.now(),hypothesisId:'A'})}).catch(function(){});
                     handleVote(theme.id);
                 });
+                // #endregion
 
                 container.appendChild(item);
             });
@@ -544,6 +553,9 @@
 
         /* ---- Vote Handling (debounce) ---- */
         function handleVote(id) {
+            // #region agent log
+            fetch('http://127.0.0.1:7410/ingest/9cbcc94d-8c1f-47e5-81cf-3f04dd82ce1b',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b42af6'},body:JSON.stringify({sessionId:'b42af6',location:'index.html:handleVote',message:'handleVote called',data:{id:id,isVoting:isVoting,hasCastVoteImpl:!!castVoteImpl},timestamp:Date.now(),hypothesisId:'B'})}).catch(function(){});
+            // #endregion
             if (isVoting || !castVoteImpl) return;
             isVoting = true;
             document.querySelectorAll('.vote-btn').forEach(function (b) { b.disabled = true; });
