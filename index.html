@@ -500,7 +500,6 @@
         function render(votes) {
             if (!votes) return;
             loader.style.display = 'none';
-            errorBox.style.display = 'none';
 
             const themed = themeData.map(t => ({ ...t, votes: votes['votes_' + t.id] || 0 }));
             const sorted = [...themed].sort((a, b) => b.votes - a.votes || a.id - b.id);
@@ -662,7 +661,7 @@
                 });
             } catch (e) {
                 console.error('Firebase initialization failed:', e);
-                showError('Firebaseへの接続に失敗しました。ローカルデモモードに切り替えます。');
+                showError('Firebase接続エラー: ' + (e.code || '') + ' ' + (e.message || e));
                 startLocalMode();
             }
         }
