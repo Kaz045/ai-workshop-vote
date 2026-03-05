@@ -501,12 +501,11 @@
             loader.style.display = 'none';
 
             const themed = themeData.map(t => ({ ...t, votes: votes['votes_' + t.id] || 0 }));
-            const sorted = [...themed].sort((a, b) => b.votes - a.votes || a.id - b.id);
-            const maxV   = Math.max(...sorted.map(t => t.votes), 1);
+            const maxV   = Math.max(...themed.map(t => t.votes), 1);
 
             container.innerHTML = '';
 
-            sorted.forEach(theme => {
+            themed.forEach(theme => {
                 const pct  = (theme.votes / maxV) * 100;
                 const item = document.createElement('div');
                 item.className = 'theme-item';
