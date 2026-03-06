@@ -24,6 +24,33 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Validate Firebase secrets
+        env:
+          FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+          FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN }}
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
+          FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+          FIREBASE_APP_ID_LABEL: ${{ secrets.FIREBASE_APP_ID_LABEL }}
+        run: |
+          set -euo pipefail
+          required=(
+            FIREBASE_API_KEY
+            FIREBASE_AUTH_DOMAIN
+            FIREBASE_PROJECT_ID
+            FIREBASE_STORAGE_BUCKET
+            FIREBASE_MESSAGING_SENDER_ID
+            FIREBASE_APP_ID
+            FIREBASE_APP_ID_LABEL
+          )
+          for key in "${required[@]}"; do
+            if [ -z "${!key:-}" ]; then
+              echo "::error::Missing required secret: ${key}"
+              exit 1
+            fi
+          done
+
       - name: Inject Firebase config from Secrets
         env:
           FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
@@ -34,6 +61,7 @@ jobs:
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
           FIREBASE_APP_ID_LABEL: ${{ secrets.FIREBASE_APP_ID_LABEL }}
         run: |
+          set -euo pipefail
           for f in index.html; do
             sed -i "s|%%FIREBASE_API_KEY%%|${FIREBASE_API_KEY}|g" "$f"
             sed -i "s|%%FIREBASE_AUTH_DOMAIN%%|${FIREBASE_AUTH_DOMAIN}|g" "$f"
@@ -43,6 +71,14 @@ jobs:
             sed -i "s|%%FIREBASE_APP_ID%%|${FIREBASE_APP_ID}|g" "$f"
             sed -i "s|%%FIREBASE_APP_ID_LABEL%%|${FIREBASE_APP_ID_LABEL}|g" "$f"
           done
+
+      - name: Verify Firebase placeholders are fully replaced
+        run: |
+          set -euo pipefail
+          if grep -nE '%%FIREBASE_[A-Z_]+%%' index.html; then
+            echo "::error::Placeholder tokens remain in index.html"
+            exit 1
+          fi
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
