@@ -56,12 +56,12 @@
 
 ```javascript
 const firebaseConfig = {
-  apiKey: "AIza...",
+  apiKey: "<YOUR_FIREBASE_API_KEY>",
   authDomain: "your-project.firebaseapp.com",
   projectId: "your-project",
   storageBucket: "your-project.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abcdef"
+  messagingSenderId: "<YOUR_MESSAGING_SENDER_ID>",
+  appId: "<YOUR_FIREBASE_APP_ID>"
 };
 ```
 
@@ -72,14 +72,14 @@ const firebaseConfig = {
 ```html
 <script>
     var __firebase_config = JSON.stringify({
-        apiKey: "AIza...",
+        apiKey: "<YOUR_FIREBASE_API_KEY>",
         authDomain: "your-project.firebaseapp.com",
         projectId: "your-project",
         storageBucket: "your-project.appspot.com",
-        messagingSenderId: "123456789",
-        appId: "1:123456789:web:abcdef"
+        messagingSenderId: "<YOUR_MESSAGING_SENDER_ID>",
+        appId: "<YOUR_FIREBASE_APP_ID>"
     });
-    var __app_id = "workshop-ai-demo";
+    var __app_id = "<YOUR_FIREBASE_APP_ID_LABEL>";
 </script>
 ```
 
