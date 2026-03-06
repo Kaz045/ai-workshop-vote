@@ -45,6 +45,31 @@
 2. 投票URLを案内から外し、追加投票を止める
 3. セキュリティ後処理（`TODO.md` の「Git履歴に残存する Firebase 設定値の無効化と除去」）を実施する
 
+## 履歴改変後の同期手順（`main` を `--force-with-lease` 更新した場合）
+
+履歴改変後は、他端末のローカルクローンを `origin/main` に同期してください。
+
+### 未コミット変更がない場合
+
+```bash
+cd <repo>
+git fetch origin
+git checkout main
+git reset --hard origin/main
+git gc --prune=now
+```
+
+### 未コミット変更がある場合
+
+```bash
+cd <repo>
+git stash push -u -m "before-history-rewrite-sync"
+git fetch origin
+git checkout main
+git reset --hard origin/main
+git stash pop
+```
+
 ## 詳細ドキュメント
 
 セットアップ手順や Firebase の補足は `html_experiment/README.md` を参照してください。
