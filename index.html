@@ -282,6 +282,23 @@
             transition: background 0.3s;
         }
 
+        .line-banner {
+            background: linear-gradient(135deg, #06c755, #05a847);
+            color: white;
+            text-align: center;
+            padding: 14px 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: none;
+            line-height: 1.7;
+        }
+
+        .line-banner strong {
+            display: block;
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
         @media (max-width: 600px) {
             .hero { padding: 40px 15px; }
             .hero h1 { font-size: 1.5rem; }
@@ -297,6 +314,11 @@
     </style>
 </head>
 <body>
+
+    <div id="line-banner" class="line-banner">
+        <strong>LINEアプリ内で開いています</strong>
+        投票を正しく共有するには、右上の「⋮」メニュー →「ブラウザで開く」をタップしてください。
+    </div>
 
     <header class="hero">
         <div class="subtitle">With.</div>
@@ -332,6 +354,10 @@
         <span id="status-text">読み込み中…</span>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore-compat.js"></script>
+
     <script>
         var __firebase_config = JSON.stringify({
             apiKey: "%%FIREBASE_API_KEY%%",
@@ -344,7 +370,7 @@
         var __app_id = "%%FIREBASE_APP_ID_LABEL%%";
     </script>
 
-    <script type="module">
+    <script>
         const DEBOUNCE_MS = 600;
         const LS_KEY = 'ai_workshop_votes';
 
@@ -394,16 +420,22 @@
             }
         ];
 
-        const container = document.getElementById('theme-list');
-        const loader    = document.getElementById('loader');
-        const statusDot = document.getElementById('status-dot');
-        const statusTxt = document.getElementById('status-text');
-        const demoBanner = document.getElementById('demo-banner');
-        const errorBox  = document.getElementById('error-box');
-        const footerNote = document.getElementById('footer-note');
+        var container  = document.getElementById('theme-list');
+        var loader     = document.getElementById('loader');
+        var statusDot  = document.getElementById('status-dot');
+        var statusTxt  = document.getElementById('status-text');
+        var demoBanner = document.getElementById('demo-banner');
+        var errorBox   = document.getElementById('error-box');
+        var footerNote = document.getElementById('footer-note');
+        var lineBanner = document.getElementById('line-banner');
 
-        let castVoteImpl = null;
-        let isVoting = false;
+        var castVoteImpl = null;
+        var isVoting = false;
+
+        function isLineWebView() {
+            var ua = navigator.userAgent || '';
+            return /Line\//i.test(ua);
+        }
 
         /* ---- Status Badge ---- */
         function setStatus(mode, text) {
@@ -421,6 +453,7 @@
                 footerNote.textContent = '※ローカルデモモード：投票データはこの端末にのみ保存されます。';
             } else if (mode === 'connected') {
                 demoBanner.style.display = 'none';
+                lineBanner.style.display = 'none';
                 footerNote.textContent = '※このページは全員で共有されています。リアルタイムで集計中。';
             }
         }
@@ -529,70 +562,72 @@
             };
         }
 
-        /* ---- Firebase Mode ---- */
-        async function startFirebaseMode(firebaseConfig, appId) {
+        /* ---- Firebase Mode (Compat SDK) ---- */
+        function startFirebaseMode(firebaseConfig, appId) {
             try {
                 setStatus('loading', '接続中…');
 
-                const { initializeApp } =
-                    await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js");
-                const { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } =
-                    await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
-                const { getFirestore, doc, getDoc, setDoc, onSnapshot, updateDoc, increment } =
-                    await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
-
-                const app  = initializeApp(firebaseConfig);
-                const auth = getAuth(app);
-                const db   = getFirestore(app);
-
-                const getSurveyDocRef = function () {
-                    return doc(db, 'artifacts', appId, 'public', 'survey_results');
-                };
-
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
+                if (typeof firebase === 'undefined') {
+                    throw new Error('Firebase SDK の読み込みに失敗しました');
                 }
 
-                onAuthStateChanged(auth, async function (user) {
+                firebase.initializeApp(firebaseConfig);
+                var auth = firebase.auth();
+                var db   = firebase.firestore();
+
+                var getSurveyDocRef = function () {
+                    return db.collection('artifacts').doc(appId).collection('public').doc('survey_results');
+                };
+
+                var signInPromise;
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    signInPromise = auth.signInWithCustomToken(__initial_auth_token);
+                } else {
+                    signInPromise = auth.signInAnonymously();
+                }
+
+                signInPromise.catch(function (e) {
+                    console.error('Auth failed:', e);
+                    showError('認証に失敗しました（' + (e.code || e.message) + '）。ローカルモードに切り替えます。');
+                    startLocalMode();
+                });
+
+                auth.onAuthStateChanged(function (user) {
                     if (!user) return;
 
                     var docRef = getSurveyDocRef();
 
-                    try {
-                        var snap = await getDoc(docRef);
-                        if (!snap.exists()) {
+                    docRef.get().then(function (snap) {
+                        if (!snap.exists) {
                             var initial = {};
                             themeData.forEach(function (t) { initial['votes_' + t.id] = 0; });
-                            await setDoc(docRef, initial);
+                            return docRef.set(initial);
                         }
-                    } catch (e) {
+                    }).then(function () {
+                        docRef.onSnapshot(function (docSnap) {
+                            if (docSnap.exists) {
+                                setStatus('connected', 'リアルタイム同期中');
+                                render(docSnap.data());
+                            }
+                        }, function (err) {
+                            console.error('Snapshot error:', err);
+                            showError('データの同期に失敗しました（' + (err.code || err.message) + '）。ページを再読み込みしてください。');
+                            setStatus('error', '同期エラー');
+                        });
+
+                        castVoteImpl = function (id) {
+                            var update = {};
+                            update['votes_' + id] = firebase.firestore.FieldValue.increment(1);
+                            getSurveyDocRef().update(update).catch(function (e) {
+                                console.error('Vote failed:', e);
+                                showError('投票に失敗しました。再度お試しください。');
+                            });
+                        };
+                    }).catch(function (e) {
                         console.error('Firestore init error:', e);
                         showError('Firestoreの初期化に失敗しました（' + (e.code || e.message) + '）。ローカルモードに切り替えます。');
                         startLocalMode();
-                        return;
-                    }
-
-                    onSnapshot(docRef, function (docSnap) {
-                        if (docSnap.exists()) {
-                            setStatus('connected', 'リアルタイム同期中');
-                            render(docSnap.data());
-                        }
-                    }, function (err) {
-                        console.error('Snapshot error:', err);
-                        showError('データの同期に失敗しました（' + (err.code || err.message) + '）。ページを再読み込みしてください。');
-                        setStatus('error', '同期エラー');
                     });
-
-                    castVoteImpl = async function (id) {
-                        try {
-                            await updateDoc(getSurveyDocRef(), { ['votes_' + id]: increment(1) });
-                        } catch (e) {
-                            console.error('Vote failed:', e);
-                            showError('投票に失敗しました。再度お試しください。');
-                        }
-                    };
                 });
             } catch (e) {
                 console.error('Firebase initialization failed:', e);
@@ -602,7 +637,7 @@
         }
 
         /* ---- Main ---- */
-        async function main() {
+        function main() {
             var firebaseConfig = null;
             var appId = (typeof __app_id !== 'undefined') ? __app_id : 'workshop-ai-demo';
 
@@ -613,18 +648,24 @@
                 console.warn('Firebase config parse failed:', e);
             }
 
-            if (firebaseConfig && firebaseConfig.apiKey) {
-                await startFirebaseMode(firebaseConfig, appId);
+            if (isLineWebView()) {
+                lineBanner.style.display = 'block';
+            }
+
+            if (firebaseConfig && firebaseConfig.apiKey && typeof firebase !== 'undefined') {
+                startFirebaseMode(firebaseConfig, appId);
             } else {
                 startLocalMode();
             }
         }
 
-        main().catch(function (e) {
+        try {
+            main();
+        } catch (e) {
             console.error('Unexpected error:', e);
             showError('予期しないエラーが発生しました。ページを再読み込みしてください。');
             setStatus('error', 'エラー');
-        });
+        }
     </script>
 </body>
 </html>
