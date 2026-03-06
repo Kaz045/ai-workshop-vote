@@ -34,7 +34,7 @@ jobs:
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
           FIREBASE_APP_ID_LABEL: ${{ secrets.FIREBASE_APP_ID_LABEL }}
         run: |
-          for f in index.html html/index.html; do
+          for f in index.html; do
             sed -i "s|%%FIREBASE_API_KEY%%|${FIREBASE_API_KEY}|g" "$f"
             sed -i "s|%%FIREBASE_AUTH_DOMAIN%%|${FIREBASE_AUTH_DOMAIN}|g" "$f"
             sed -i "s|%%FIREBASE_PROJECT_ID%%|${FIREBASE_PROJECT_ID}|g" "$f"
