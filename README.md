@@ -22,8 +22,10 @@
 ## 主なファイル
 
 - `index.html`: GitHub Pages 公開用のメインページ
+- `STRUCTURE_GUIDE.md`: このリポジトリの構成と、目的別の参照先ガイド
 - `html_experiment/index.html`: 作業用のHTML
 - `html_experiment/README.md`: 詳細なセットアップ手順、トラブルシュート、チェックリスト
+- `docs/`: 企画関連ドキュメント一式（詳細は `docs/README.md`）
 - `TODO.md`: 次回再開用メモ
 
 ## 現在の状況
