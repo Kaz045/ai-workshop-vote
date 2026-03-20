@@ -1,184 +1,85 @@
 # ストラクチャーガイド
 
-このファイルは、
-「どこに何があるか」
-「何を探したいときにどこを見ればいいか」
-をすぐ分かるようにするためのガイドです。
+このリポジトリでは、`specs/` とルート文書を正史、`docs/` などを履歴・参考レーンとして扱います。
+人でも AI でも、最初に読む順番を固定して迷いを減らすことが目的です。
 
-## まず結論
+## コーディング前の読書順
 
-### 企画書や構成案を探したい
+1. `README.md`
+2. `STRUCTURE_GUIDE.md`
+3. `DECISIONS.md`
+4. `TODO.md`
+5. 必要な `specs/*.md`
+6. 関連コード
+   - 公開ページ: `index.html`
+   - 投票プロトタイプ: `html_experiment/index.html`
+   - デプロイ: `.github/workflows/pages.yml`
+   - 運用スクリプト: `scripts/security/`
 
-`docs/plans/` を見る。
+## デフォルトで読まない場所
 
-- 手作業で整理した企画書: `docs/plans/ワークショップ企画書_v1.0.md`, `docs/plans/ワークショップ企画書_v1.5.md`
-- ChatGPT の会話エクスポート: `docs/chatgpt_exports/ChatGPT-00_...` 〜 `docs/chatgpt_exports/ChatGPT-03_...`
-- 次回の企画メモ: `docs/plans/次回ワークショップ企画メモ_2026-03-15.md`
+以下は参考レーンです。実装や運用の判断に必要なときだけ開きます。
 
-### 今公開されているページ本体を見たい
+- `docs/chatgpt_exports/`
+- `docs/plans/`
+- `sessions/`
+- `ideas/`
+- `proposals/`
+- `experiments/`
+- `outputs/`
+- `gifts/`
+- `Webinar slides/`
 
-ルートの `index.html` を見る。
+## 正史と参考の線引き
 
-- GitHub Pages の公開エントリーポイント
-- 現在は「投票受付終了後」の案内・結果表示ページとして使っている
+### 正史
 
-### 投票ページの開発用HTMLや過去の作業版を見たい
+- `README.md`: プロジェクト概要と入口
+- `STRUCTURE_GUIDE.md`: 参照順とフォルダ責務
+- `DECISIONS.md`: 採用済み判断の記録
+- `TODO.md`: 現在地、次アクション、未解決事項
+- `specs/`: 実装・運用の正史
 
-`html_experiment/` を見る。
+### 参考
 
-- `html_experiment/index.html`: 開発・検証用の投票ページ
-- `html_experiment/AI時代の仕事のリアル_企画書.html`: 元になった参考HTML
-- `html_experiment/README.md`: ローカル確認方法、Firebase 設定、トラブルシュート
+- `docs/`: 旧来の企画書、会話ログ、運用メモ
+- `html_experiment/`: 再利用可能性はあるが、現時点では実験・履歴寄り
+- `sessions/`: 作業ログ
+- `ideas/`, `proposals/`: 今後の整理先
 
-### 次に何をやるか、再開地点を知りたい
+## トップレベルの役割
 
-`TODO.md` を見る。
-
-- 未完了タスク
-- 過去の障害状況
-- 当日運用メモ
-- セキュリティ対応の残作業
-
-### デプロイ設定や GitHub Pages の仕組みを見たい
-
-`.github/workflows/pages.yml` を見る。
-
-- `main` への push で GitHub Pages を更新
-- ルートの `index.html` を含むリポジトリ内容を配信
-- Firebase 関連の Secrets を注入する処理が入っている
-
-### Firebase やセキュリティ対応を見たい
-
-`docs/operations/firebase_api_key_incident_response.md` と `scripts/security/` を見る。
-
-- `docs/operations/firebase_api_key_incident_response.md`: 対応方針のメモ
-- `scripts/security/find_firebase_key_commits.sh`: 履歴に残ったキー痕跡の調査
-- `scripts/security/set_github_firebase_secrets.sh`: GitHub Secrets 更新補助
-
-## ルート構成
-
-```text
-.
-├── README.md
-├── STRUCTURE_GUIDE.md
-├── TODO.md
-├── index.html
-├── docs/
-│   ├── README.md
-│   ├── plans/
-│   ├── chatgpt_exports/
-│   └── operations/
-├── html_experiment/
-├── scripts/
-└── .github/
-```
-
-## ディレクトリごとの役割
-
-### ルート
-
-リポジトリの入口。
-公開ページ本体と、全体把握用のドキュメントが置いてある。
-
-主要ファイル:
-
-- `README.md`: リポジトリ概要、公開URL、運用メモ
-- `STRUCTURE_GUIDE.md`: このガイド
-- `TODO.md`: 再開用メモ、未完了タスク、障害状況
-- `index.html`: GitHub Pages の公開対象になるメインHTML
-
-### `docs/`
-
-文章ドキュメントの集約場所。
-役割別にサブフォルダへ分けている。
-
-サブフォルダ:
-
-- `docs/plans/`: 企画書、構成案、進行中メモ
-- `docs/chatgpt_exports/`: ChatGPT の会話エクスポート
-- `docs/operations/`: 運用、障害、セキュリティ対応メモ
-- `docs/README.md`: `docs/` 配下の案内
-
-使い分けの目安:
-
-- 今後の企画を自分で詰めるなら `docs/plans/`
-- 会話の流れや発想の元ネタを見たいなら `docs/chatgpt_exports/`
-- セキュリティ事故対応を見るなら `docs/operations/`
-
-### `html_experiment/`
-
-HTML の開発・検証・参考保存用。
-公開トップとは別に、作業用のHTMLを置いている。
-
-主要ファイル:
-
-- `html_experiment/index.html`: 作業用の投票ページ
-- `html_experiment/AI時代の仕事のリアル_企画書.html`: 初期素材・参考用
-- `html_experiment/README.md`: セットアップ手順、ローカル確認、Firebase 手順
-
-見る場面:
-
-- レイアウトや投票UIを触りたい
-- Firebase 接続のローカル確認をしたい
-- 元デザインとの差分を確認したい
-
-### `scripts/`
-
-補助スクリプト置き場。
-現在はセキュリティ対応用が中心。
-
-`scripts/security/` の中身:
-
-- `find_firebase_key_commits.sh`: Git 履歴に API キー形式の文字列が入ったコミットを探す
-- `set_github_firebase_secrets.sh`: `gh` CLI 経由で Firebase 関連 Secrets を設定する
-
-### `.github/`
-
-GitHub Actions など、リポジトリ運用用の設定。
-
-主要ファイル:
-
-- `.github/workflows/pages.yml`: GitHub Pages デプロイ用ワークフロー
-
-## 目的別の参照先
-
-| 探したいもの | 見る場所 | 補足 |
+| パス | 役割 | コーディング時の既定 |
 |---|---|---|
-| リポジトリの概要 | `README.md` | 最初に読む入口 |
-| どこに何があるか | `STRUCTURE_GUIDE.md` | このファイル |
-| 再開ポイント、残作業 | `TODO.md` | 当日運用メモもここ |
-| 今の公開ページ | `index.html` | GitHub Pages の入口 |
-| 投票ページの作業版 | `html_experiment/index.html` | 開発・検証用 |
-| ローカル確認方法 | `html_experiment/README.md` | Firebase 手順あり |
-| ワークショップ企画書 | `docs/plans/` | 企画関連の基本置き場 |
-| ChatGPT の元会話 | `docs/chatgpt_exports/` | 参考資料として保存 |
-| 次回企画の叩き台 | `docs/plans/次回ワークショップ企画メモ_2026-03-15.md` | 今後の作業起点 |
-| セキュリティ事故対応 | `docs/operations/firebase_api_key_incident_response.md` | 手順メモ |
-| Secrets 注入と Pages デプロイ | `.github/workflows/pages.yml` | GitHub 側の挙動を見る場所 |
-| Firebase Secrets 更新補助 | `scripts/security/set_github_firebase_secrets.sh` | `gh` CLI 前提 |
+| `README.md` | プロジェクトの入口 | 読む |
+| `STRUCTURE_GUIDE.md` | 参照順と責務 | 読む |
+| `DECISIONS.md` | 採用済み判断の索引 | 読む |
+| `TODO.md` | 現在の作業状態 | 読む |
+| `specs/` | 正史仕様 | 読む |
+| `index.html` | 公開中の結果ページ | 必要時に読む |
+| `html_experiment/` | 投票プロトタイプと補足 README | 必要時に読む |
+| `.github/` | デプロイ設定 | 必要時に読む |
+| `scripts/` | セキュリティ系補助スクリプト | 必要時に読む |
+| `docs/` | 履歴・参考資料 | 通常は読まない |
+| `sessions/` | 日次作業ログ | 通常は読まない |
+| `ideas/` | 生メモ | 通常は読まない |
+| `proposals/` | 企画候補・採用前文書 | 通常は読まない |
+| `projects/` | 将来の成果物分離先 | 現時点では空 |
+| `prompts/` | 再利用プロンプト置き場 | 必要時に読む |
+| `experiments/` | 使い捨て検証 | 通常は読まない |
+| `outputs/` | 生成物・書き出し | 通常は読まない |
+| `skills/` | 将来の運用知見 | 必要時に読む |
 
-## 運用上の見方
+## 運用ルール
 
-### 企画を進めるとき
+- 新しい承認済み仕様は `specs/` に入れます
+- 新しい判断は `DECISIONS.md` に残します
+- 新しい生メモは `ideas/`、比較可能な企画案は `proposals/` に入れます
+- `prompts/` に新規追加する文書は、既存ルールがない限り英語で書きます
+- GitHub Pages の都合で、現行の公開ページ `index.html` はルートに残します
 
-1. `docs/plans/` を見る
-2. 必要なら `TODO.md` で未完了事項を確認する
-3. 新しい企画メモは `docs/plans/` に増やす
+## 現時点で注意すべき不一致
 
-### 公開ページを直すとき
-
-1. まず `index.html` を見る
-2. ローカル検証や比較が必要なら `html_experiment/` も見る
-3. デプロイの仕組み確認が必要なら `.github/workflows/pages.yml` を見る
-
-### 障害対応やセキュリティ対応をするとき
-
-1. `TODO.md` の障害メモを確認する
-2. `docs/operations/firebase_api_key_incident_response.md` を確認する
-3. 必要に応じて `scripts/security/` を使う
-
-## 補足
-
-- `.cursor/` はローカルのデバッグログ置き場で、アプリ本体ではない
-- `.venv-filter/` は `git filter-repo` 用のローカル仮想環境で、公開サイトの動作には直接関係しない
-- `.git/` は Git 管理用ディレクトリなので、通常の作業対象としては見なくてよい
+- ルート `index.html` は 4 テーマの最終結果ページです
+- `html_experiment/index.html` は 5 テーマ構成の Firebase 前提プロトタイプです
+- `.github/workflows/pages.yml` は Firebase Secrets 前提のままで、現行の静的結果ページとは設計上ずれがあります
