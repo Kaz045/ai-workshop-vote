@@ -22,6 +22,8 @@
 
 - `docs/chatgpt_exports/`
 - `docs/plans/`
+- `docs/reports/`
+- `records/`
 - `sessions/`
 - `ideas/`
 - `proposals/`
@@ -43,7 +45,9 @@
 ### 参考
 
 - `docs/`: 旧来の企画書、会話ログ、運用メモ
+- `docs/reports/`: 開催後レポート、会員報告、文字起こし整理メモ
 - `html_experiment/`: 再利用可能性はあるが、現時点では実験・履歴寄り
+- `records/`: 録音・録画・画像などの原本を置くローカル限定ストレージ
 - `sessions/`: 作業ログ
 - `ideas/`, `proposals/`: 今後の整理先
 
@@ -61,6 +65,7 @@
 | `.github/` | デプロイ設定 | 必要時に読む |
 | `scripts/` | セキュリティ系補助スクリプト | 必要時に読む |
 | `docs/` | 履歴・参考資料 | 通常は読まない |
+| `records/` | 録音・録画・画像などの原本保管先。Git 管理外 | 通常は読まない |
 | `sessions/` | 日次作業ログ | 通常は読まない |
 | `ideas/` | 生メモ | 通常は読まない |
 | `proposals/` | 企画候補・採用前文書 | 通常は読まない |
@@ -74,7 +79,9 @@
 
 - 新しい承認済み仕様は `specs/` に入れます
 - 新しい判断は `DECISIONS.md` に残します
+- 開催後レポートや会員報告のドラフトは `docs/reports/` に入れます
 - 新しい生メモは `ideas/`、比較可能な企画案は `proposals/` に入れます
+- 録音・録画・画像などの原本は `records/` に置き、Git 管理に含めません
 - `prompts/` に新規追加する文書は、既存ルールがない限り英語で書きます
 - GitHub Pages の都合で、現行の公開ページ `index.html` はルートに残します
 

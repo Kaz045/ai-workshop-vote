@@ -19,3 +19,13 @@
 - Why: すでに公開されている内容と実際の投票結果を優先し、未整合の試作版を誤って正史として読まないようにするため
 - Affected files: `README.md`, `STRUCTURE_GUIDE.md`, `TODO.md`, `specs/requirements.md`, `specs/architecture.md`, `specs/data-model.md`, `specs/ui-ux.md`
 - Follow-up: `html_experiment/` を将来再利用するか、完全に履歴化するかを決める
+
+## DEC-0003 - 開催後レポートは `docs/reports/`、原本メディアは `records/` で分離する
+
+- Date: 2026-03-25
+- Status: Accepted
+- Context: 第1回ワークショップの開催が終わり、会員報告として残すテキスト文書と、今後追加される録音・録画・画像などの原本データの置き場を分ける必要が出てきた
+- Decision: テキスト主体の開催後レポート、会員報告、文字起こし整理メモは `docs/reports/` に置く。録音・録画・画像などの原本メディアはトップレベル `records/` に置き、`.gitignore` で Git 管理から除外する
+- Why: 振り返り文書は次回企画へ反映できる形で追跡可能に残しつつ、大容量かつ機微を含みうる原本データはローカル管理に分離したいため
+- Affected files: `README.md`, `STRUCTURE_GUIDE.md`, `TODO.md`, `DECISIONS.md`, `docs/README.md`, `.gitignore`, `docs/reports/`, `records/`
+- Follow-up: 第1回レポートに文字起こしと要約を取り込み、採用した改善方針を `proposals/` と `specs/` に昇格させる
