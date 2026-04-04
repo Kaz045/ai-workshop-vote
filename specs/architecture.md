@@ -2,65 +2,61 @@
 
 ## 全体像
 
-このリポジトリは、単一のアプリケーションコードベースというより、公開成果物、投票プロトタイプ、企画資料、運用メモをまとめたワークスペースです。
-そのため、コード構造だけでなく、資料レーンの分離もアーキテクチャの一部として扱います。
+このリポジトリは、With ポータル本体、現在の仕様書、旧プロジェクトの履歴資産をまとめたワークスペースです。
+現行公開物は `site/`、履歴資産は `archive/`、背景資料は `docs/` に分離します。
 
 ## 現在の主要コンポーネント
 
-### 1. 公開成果物
+### 1. 公開トップページ
 
-- `index.html`
-- GitHub Pages で公開している静的ページ
-- 役割は「投票受付終了」と「最終結果表示」
+- `site/index.html`
+- 役割はポータルの入口
+- 第1回アーカイブへの導線を持つ
 
-### 2. 投票プロトタイプ
+### 2. 会員向けアーカイブ
 
-- `html_experiment/index.html`
-- Firebase Auth / Firestore を使うリアルタイム投票試作
-- ただし、現時点では公開正史ではなく、文言とテーマ数も現行方針とずれています
+- `site/workshops/session-1.html`
+- 役割は第1回ワークショップの振り返り
+- JavaScript によるページ単位の保護を使う
 
-### 3. デプロイ設定
+### 3. 共通アセット
 
-- `.github/workflows/pages.yml`
-- `main` への push または手動実行で GitHub Pages を更新
-- まだ Firebase Secrets 前提の処理を含んでいます
+- `site/assets/css/main.css`
+- `site/assets/css/with-theme.css`
+- `site/assets/js/layout.js`
+- `site/assets/js/password-gate.js`
 
-### 4. 運用補助
+### 4. 共通パーツ
 
-- `scripts/security/`
-- Firebase 設定値の痕跡調査や GitHub Secrets 更新補助を行います
+- `site/components/header.html`
+- `site/components/footer.html`
+- 各ページから fetch で読み込む
 
-### 5. ドキュメントレーン
+### 5. 履歴資産
 
-- `specs/`: 正史仕様
-- `docs/`: 履歴資料
-- `ideas/`, `proposals/`, `sessions/`, `experiments/`, `outputs/`: 補助レーン
+- `archive/v1-vote-result/`
+- `archive/html_experiment/`
+- `archive/specs/`
+- `archive/firebase/`
 
 ## 現在のデータフロー
 
 ### 公開ページ
 
-1. メンテナが `main` に変更を入れる
-2. GitHub Actions が Pages 用 artifact を生成する
-3. GitHub Pages がルート `index.html` を配信する
-4. 閲覧者は静的な最終結果を読む
+1. メンテナが `site/` とルート文書を更新する
+2. GitHub Actions が `site/` を Pages artifact としてアップロードする
+3. GitHub Pages がポータルを配信する
+4. 閲覧者はトップページまたは会員向けページを開く
 
-### 旧プロトタイプ
+### 会員向けページ
 
-1. `html_experiment/index.html` が Firebase 設定値を受け取る前提で起動する
-2. 匿名認証後、Firestore `artifacts/{appId}/public/survey_results` に接続する
-3. 投票 UI を更新する
-
-この流れはあくまで試作時の構成であり、現在の公開正史ではありません。
+1. ページ読み込み時は保護コンテンツを隠す
+2. ユーザーがパスワードを入力する
+3. `password-gate.js` が SHA-256 ハッシュを比較する
+4. 一致したら `sessionStorage` に状態を保存してコンテンツを表示する
 
 ## 設計上の注意点
 
-- 現在の公開ページは静的ですが、デプロイワークフローは Firebase Secrets 前提です
-- `html_experiment/` は 5 テーマ、公開結果ページは 4 テーマで、データモデルが分岐しています
-- 企画書は `docs/plans/` に残っていますが、承認済み仕様としてはまだ昇格していません
-
-## 今後の整理方針
-
-- 企画が採用されたら `proposals/` と `specs/` に反映する
-- ライブ投票を再開するなら、`html_experiment/` をそのまま使わず、要件とデプロイを再設計する
-- 現行の GitHub Pages 運用は、静的ページ前提に簡略化できる余地があります
+- ページ保護は「軽いアクセス制御」であり、厳格な認証ではない
+- 重い原本データは `records/` へ移し、公開 artifact に含めない
+- 旧 Firebase 資産は今の公開アーキテクチャには関与しない

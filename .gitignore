@@ -6,7 +6,9 @@
 .firebase/
 firebase-debug.log
 .cursor/
+.venv-filter/
 Webinar slides/
 gifts/
 cursor_workspace/
 records/
+docs/reports/*.pdf

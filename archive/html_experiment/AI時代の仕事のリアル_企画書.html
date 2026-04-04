@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI時代の仕事のリアル - リアルタイム投票</title>
+    <!-- Firebase Libraries -->
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js" type="module"></script>
+
+    <style>
+        :root {
+            --primary: #1e293b;
+            --secondary: #3b82f6;
+            --accent: #f59e0b;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #334155;
+            --text-muted: #64748b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            line-height: 1.6;
+            color: var(--text-main);
+            background-color: var(--bg-color);
+        }
+
+        .container { max-width: 800px; margin: 0 auto; padding: 0 20px 60px; }
+
+        .hero {
+            background: linear-gradient(135deg, var(--primary), #0f172a);
+            color: white;
+            text-align: center;
+            padding: 60px 20px;
+            border-radius: 0 0 30px 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .hero h1 { font-size: 2rem; line-height: 1.4; margin-bottom: 10px; }
+        .hero-highlight { color: var(--accent); }
+
+        .section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        .section-title {
+            color: var(--primary);
+            font-size: 1.4rem;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        /* Voting System */
+        .vote-instruction {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            background: #fffbeb;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px dashed #fcd34d;
+            font-size: 0.9rem;
+        }
+
+        .theme-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-height: 400px;
+        }
+
+        .theme-item {
+            display: flex;
+            align-items: center;
+            background: #fff;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .theme-item:hover {
+            border-color: var(--secondary);
+            transform: scale(1.01);
+        }
+
+        .theme-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: #eff6ff;
+            z-index: 0;
+            width: 0%;
+            transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .theme-content {
+            flex: 1;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .theme-number {
+            background: var(--text-muted);
+            color: white;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 0.8rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .theme-text { font-weight: bold; font-size: 1rem; }
+        .theme-subtext { display: block; font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+
+        .vote-area {
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-left: 12px;
+            border-left: 2px dashed #e2e8f0;
+        }
+
+        .vote-btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .vote-count-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 45px;
+        }
+
+        .count-number { font-size: 1.6rem; font-weight: 900; color: var(--secondary); line-height: 1; }
+        .count-label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; }
+
+        #loader {
+            text-align: center;
+            padding: 20px;
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); color: var(--accent); }
+            100% { transform: scale(1); }
+        }
+        .pop-anim { animation: pop 0.4s ease-out; }
+
+        .comparison { display: flex; gap: 15px; margin-bottom: 20px; }
+        .comp-box { flex: 1; padding: 15px; border-radius: 10px; font-size: 0.9rem; }
+        .comp-bad { background: #fef2f2; border: 1px solid #fecaca; }
+        .comp-good { background: #f0fdf4; border: 1px solid #bbf7d0; }
+        
+        .status-badge {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 8px 12px;
+            background: #1e293b;
+            color: white;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 100;
+        }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; }
+    </style>
+</head>
+<body>
+
+    <header class="hero">
+        <h1>AI時代の<span class="hero-highlight">仕事のリアル</span></h1>
+        <p style="opacity: 0.8; font-size: 0.9rem;">〜 自分のコアバリューをAIで拡張する 〜</p>
+    </header>
+
+    <div class="container">
+        <div class="section">
+            <h2 class="section-title">コンセプト</h2>
+            <div class="comparison">
+                <div class="comp-box comp-bad"><strong>迷走：</strong> コアがないままAIを始めようとする</div>
+                <div class="comp-box comp-good"><strong>本質：</strong> 自分の価値をAIで増幅（拡張）させる</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">ニーズ調査：どのテーマから聞きたい？</h2>
+            <div class="vote-instruction">
+                💡 参加者のニーズが多い順に実施します！<br>
+                リアルタイムで集計中。気になる項目をタップしてください。
+            </div>
+
+            <div id="loader">データを読み込み中...</div>
+            <div class="theme-container" id="theme-list"></div>
+        </div>
+
+        <p style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">
+            ※このページは全員で共有されています。
+        </p>
+    </div>
+
+    <div class="status-badge">
+        <div class="status-dot"></div>
+        <span>Live Cloud Connected</span>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase Configuration
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'workshop-ai-demo';
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const themeData = [
+            { id: 1, title: "AIを日常のOSとして使う", desc: "ChatGPT/Claude/Gemini 活用の基本" },
+            { id: 2, title: "AIツールによる効率化", desc: "実務ですぐ使える便利ツールの作り方" },
+            { id: 3, title: "AIを使ったツール開発", desc: "ノーコード・バイブコーディング入門" },
+            { id: 4, title: "システム開発のリアル", desc: "現場でのAI駆動開発の実際" },
+            { id: 5, title: "企業AI導入の現実", desc: "組織でのCopilot活用と壁" },
+            { id: 6, title: "AI時代に価値が残る仕事", desc: "法人営業 × AIの本質的な掛け合わせ" }
+        ];
+
+        const container = document.getElementById('theme-list');
+        const loader = document.getElementById('loader');
+
+        // Firestore Path Utility - Fixed: Doc path must be even segments
+        // artifacts/{appId}/public/data/{docId}
+        const getSurveyDocRef = () => doc(db, 'artifacts', appId, 'public', 'data', 'survey_results');
+
+        // Initialize Firestore data if not exists
+        async function initData(user) {
+            if (!user) return;
+            const docRef = getSurveyDocRef();
+            try {
+                const snap = await getDoc(docRef);
+                if (!snap.exists()) {
+                    const initial = {};
+                    themeData.forEach(t => initial[`votes_${t.id}`] = 0);
+                    await setDoc(docRef, initial);
+                }
+            } catch (e) {
+                console.error("Initialization error:", e);
+            }
+        }
+
+        // Render Themes UI
+        function render(votes) {
+            if (!votes) return;
+            loader.style.display = 'none';
+            container.innerHTML = '';
+
+            const themesWithVotes = themeData.map(t => ({
+                ...t,
+                votes: votes[`votes_${t.id}`] || 0
+            }));
+
+            const sorted = themesWithVotes.sort((a, b) => b.votes - a.votes || a.id - b.id);
+            const maxVotes = Math.max(...themesWithVotes.map(t => t.votes), 1);
+
+            sorted.forEach((theme, index) => {
+                const item = document.createElement('div');
+                item.className = 'theme-item';
+                item.style.order = index;
+                
+                const progressWidth = (theme.votes / maxVotes) * 100;
+                item.onclick = () => castVote(theme.id);
+
+                item.innerHTML = `
+                    <div class="theme-progress" style="width: ${progressWidth}%"></div>
+                    <div class="theme-content">
+                        <div class="theme-number">${theme.id}</div>
+                        <div>
+                            <span class="theme-text">${theme.title}</span>
+                            <span class="theme-subtext">${theme.desc}</span>
+                        </div>
+                    </div>
+                    <div class="vote-area">
+                        <button class="vote-btn">👍</button>
+                        <div class="vote-count-display">
+                            <span class="count-number" id="count-${theme.id}">${theme.votes}</span>
+                            <span class="count-label">Votes</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // Add Vote to Firestore
+        async function castVote(id) {
+            if (!auth.currentUser) return;
+            const docRef = getSurveyDocRef();
+            
+            const el = document.getElementById(`count-${id}`);
+            if (el) {
+                el.classList.remove('pop-anim');
+                void el.offsetWidth;
+                el.classList.add('pop-anim');
+            }
+
+            try {
+                await updateDoc(docRef, {
+                    [`votes_${id}`]: increment(1)
+                });
+            } catch (e) {
+                console.error("Vote failed:", e);
+            }
+        }
+
+        // Auth and App Logic
+        async function start() {
+            // Rule 3: Auth before Queries
+            const initAuth = async () => {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            };
+
+            await initAuth();
+
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    await initData(user);
+                    const docRef = getSurveyDocRef();
+                    
+                    // Rule 2: No complex queries, simple onSnapshot
+                    onSnapshot(docRef, (docSnap) => {
+                        if (docSnap.exists()) {
+                            render(docSnap.data());
+                        }
+                    }, (err) => {
+                        console.error("Snapshot error:", err);
+                        loader.innerText = "データの同期に失敗しました。";
+                    });
+                }
+            });
+        }
+
+        start();
+    </script>
+</body>
+</html>

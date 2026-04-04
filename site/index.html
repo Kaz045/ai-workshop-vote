@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>With Portal</title>
+    <meta
+      name="description"
+      content="With コミュニティのワークショップを振り返るためのポータルサイトです。第1回のアーカイブと、今後の展開方針をまとめています。"
+    />
+    <link rel="stylesheet" href="./assets/css/main.css" />
+    <link rel="stylesheet" href="./assets/css/with-theme.css" />
+    <script defer src="./assets/js/layout.js"></script>
+  </head>
+  <body data-base-path="./">
+    <div class="page-shell">
+      <div data-include="header"></div>
+
+      <main class="container">
+        <section class="hero">
+          <div class="hero__grid">
+            <div>
+              <span class="eyebrow">With. community portal</span>
+              <h1>With の学びを、あとからやさしく振り返れる場所へ。</h1>
+              <p class="hero__lead">
+                これまでの AI ワークショップで試したこと、見えてきたこと、次に育てたいことを
+                ひとつの入口にまとめました。まずは第1回のアーカイブを整え、その先に続くポータルの土台として使っていきます。
+              </p>
+              <div class="hero__actions">
+                <a class="btn-main" href="#archives">第1回アーカイブを見る</a>
+                <a class="btn-secondary" href="#next">今後の予定を見る</a>
+              </div>
+            </div>
+
+            <aside class="hero__aside" aria-label="ポータルの方針">
+              <ul>
+                <li>公開ページと会員向けページを分けた、やさしい導線</li>
+                <li>ページ単位のパスワード保護で、必要な範囲だけ閉じる構成</li>
+                <li>今後の回を積み上げやすい、カード中心のアーカイブ設計</li>
+              </ul>
+            </aside>
+          </div>
+        </section>
+
+        <section class="section" id="archives">
+          <div class="section-head">
+            <div>
+              <h2>現在見られるアーカイブ</h2>
+              <p>
+                初期コンテンツは第1回ワークショップです。振り返りメモを核にしながら、今後は資料やリンクを少しずつ追加していきます。
+              </p>
+            </div>
+            <span class="chip-main">会員向けページあり</span>
+          </div>
+
+          <div class="card-grid">
+            <article class="card">
+              <h3>第1回: AI開発の世界を覗く</h3>
+              <p>
+                第1回の開催後レポートをもとに、当日の空気感、見えてきた改善点、次の回へつながる学びを整理しました。
+              </p>
+              <ul class="bullet-list">
+                <li>開催レポートの要点整理</li>
+                <li>投票結果から見えた背景</li>
+                <li>会員向けの閲覧導線</li>
+              </ul>
+              <div class="card__meta">
+                <span class="swatch-chip">要パスワード</span>
+                <span class="swatch-chip">振り返り中心</span>
+              </div>
+              <div class="hero__actions">
+                <a class="btn-main" href="./workshops/session-1.html">アーカイブを開く</a>
+              </div>
+            </article>
+
+            <article class="card">
+              <h3>今後ここに追加したいもの</h3>
+              <p>
+                単発の開催記録だけでなく、会員が「あとから見直せる」ポータルとして整理できるよう、次の導線を順番に増やしていきます。
+              </p>
+              <ul class="bullet-list">
+                <li>次回開催の案内ページ</li>
+                <li>会員向けリンク集</li>
+                <li>シリーズ全体の時系列一覧</li>
+              </ul>
+              <div class="card__meta">
+                <span class="swatch-chip">公開ページ</span>
+                <span class="swatch-chip">順次追加</span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-head">
+            <div>
+              <h2>ここまでの流れ</h2>
+              <p>もともとの投票プロジェクトを土台にしながら、学びを蓄積できるコミュニティポータルへ方向転換しています。</p>
+            </div>
+          </div>
+
+          <ol class="timeline">
+            <li>
+              <strong>需要調査を実施</strong>
+              次に聞きたいテーマを投票で集め、興味の方向を可視化しました。
+            </li>
+            <li>
+              <strong>第1回ワークショップを開催</strong>
+              実際の開催を通して、参加者層や説明の深さ、進行の組み立て方が見えてきました。
+            </li>
+            <li>
+              <strong>アーカイブとして再整理</strong>
+              これまでの成果物を残しつつ、With のポータルとして再利用しやすい構成へ切り替えています。
+            </li>
+          </ol>
+        </section>
+
+        <section class="section" id="next">
+          <div class="section-head">
+            <div>
+              <h2>これから育てたいこと</h2>
+              <p>
+                今回は第1回のアーカイブを起点にしていますが、ここを起点に「次回案内」「会員向けページ」「シリーズの振り返り」を増やせる構成にしています。
+              </p>
+            </div>
+          </div>
+
+          <div class="metric-grid">
+            <article class="metric-card">
+              <strong>1</strong>
+              <p>会員向け資料への外部リンクを整理して、議事録や補足資料を軽く保つ</p>
+            </article>
+            <article class="metric-card">
+              <strong>2</strong>
+              <p>今後のワークショップを回ごとに追加し、時系列で追える一覧に育てる</p>
+            </article>
+            <article class="metric-card">
+              <strong>3</strong>
+              <p>検索やテーマ別の導線を足して、振り返りのしやすさを上げる</p>
+            </article>
+            <article class="metric-card">
+              <strong>4</strong>
+              <p>ライトなページ保護のまま、必要な人だけに見せる導線を整える</p>
+            </article>
+          </div>
+        </section>
+      </main>
+
+      <div data-include="footer"></div>
+    </div>
+  </body>
+</html>
