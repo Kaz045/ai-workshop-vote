@@ -306,7 +306,7 @@
                 </div>
                 <div class="summary-box">
                     <span>最終反映日時</span>
-                    <strong>2026-03-08 21:30 JST</strong>
+                    <strong id="last-updated">2026-04-04</strong>
                 </div>
             </div>
         </section>
@@ -320,7 +320,19 @@
     </main>
 
     <script>
-        const results = [
+        const surveyExportPath = './firebase-survey-results-2026-04-04.json';
+
+        const fallbackSurveyExport = {
+            exported_at: '2026-04-04',
+            data: {
+                votes_1: 4,
+                votes_2: 11,
+                votes_3: 7,
+                votes_4: 1
+            }
+        };
+
+        const resultMeta = [
             {
                 id: 1,
                 title: "ChatGPTなどを仕事の相棒として使う",
@@ -331,8 +343,7 @@
                     "AIを公私問わない思考パートナーにする方法",
                     "参考：法人営業とは何か? 営業ではどうAIを使うのか。"
                 ],
-                note: "AIを特定の事のみに使うのではなく、「相棒としてどう育てるか」についてお話します。また、ニーズがあれば法人営業についても少しお話しできればと思います。",
-                votes: 4
+                note: "AIを特定の事のみに使うのではなく、「相棒としてどう育てるか」についてお話します。また、ニーズがあれば法人営業についても少しお話しできればと思います。"
             },
             {
                 id: 2,
@@ -342,8 +353,7 @@
                     "バイブコーディング",
                     "簡易ツールを大きくしていく"
                 ],
-                note: "ワークショップでは実際に皆さんでツールを作る体験ができればと考えています。",
-                votes: 11
+                note: "ワークショップでは実際に皆さんでツールを作る体験ができればと考えています。"
             },
             {
                 id: 3,
@@ -354,8 +364,7 @@
                     "GitHub",
                     "AI駆動開発の基本"
                 ],
-                note: "非エンジニアでも理解できる、ソフトウェア開発の世界観を理解することを目的とします。",
-                votes: 7
+                note: "非エンジニアでも理解できる、ソフトウェア開発の世界観を理解することを目的とします。"
             },
             {
                 id: 4,
@@ -365,47 +374,77 @@
                     "企業のセキュリティ（AI懸念）について",
                     "中規模企業でのAI導入"
                 ],
-                note: "会社員が使うAIの現実解としてのCopilot活用のススメと、その導入アプローチをご紹介します。",
-                votes: 1
+                note: "会社員が使うAIの現実解としてのCopilot活用のススメと、その導入アプローチをご紹介します。"
             }
         ];
 
-        const totalVotes = results.reduce(function (sum, item) {
-            return sum + item.votes;
-        }, 0);
+        function buildResults(surveyExport) {
+            return resultMeta.map(function (item) {
+                const voteKey = 'votes_' + item.id;
+                return Object.assign({}, item, {
+                    votes: Number((surveyExport && surveyExport.data && surveyExport.data[voteKey]) || 0)
+                });
+            });
+        }
 
-        const sortedResults = results.slice().sort(function (a, b) {
-            return b.votes - a.votes || a.id - b.id;
-        });
+        function renderResults(surveyExport) {
+            const results = buildResults(surveyExport);
+            const totalVotes = results.reduce(function (sum, item) {
+                return sum + item.votes;
+            }, 0);
+            const sortedResults = results.slice().sort(function (a, b) {
+                return b.votes - a.votes || a.id - b.id;
+            });
 
-        document.getElementById('total-votes').textContent = totalVotes + '票';
-        document.getElementById('result-list').innerHTML = sortedResults.map(function (item, index) {
-            const share = totalVotes === 0 ? 0 : (item.votes / totalVotes) * 100;
-            const detailsHtml = item.details.map(function (detail) {
-                return '<li>' + detail + '</li>';
-            }).join('');
+            document.getElementById('total-votes').textContent = totalVotes + '票';
+            if (surveyExport && surveyExport.exported_at) {
+                document.getElementById('last-updated').textContent = surveyExport.exported_at;
+            }
 
-            return (
-                '<article class="result-item">' +
-                    '<div class="result-bar" style="width:' + share.toFixed(1) + '%"></div>' +
-                    '<div class="result-inner">' +
-                        '<div class="result-head">' +
-                            '<div class="result-label">' +
-                                '<span class="rank-badge">' + (index + 1) + '位</span>' +
-                                '<span class="theme-number">' + item.id + '</span>' +
-                                '<div class="theme-title">' + item.title + '</div>' +
+            document.getElementById('result-list').innerHTML = sortedResults.map(function (item, index) {
+                const share = totalVotes === 0 ? 0 : (item.votes / totalVotes) * 100;
+                const detailsHtml = item.details.map(function (detail) {
+                    return '<li>' + detail + '</li>';
+                }).join('');
+
+                return (
+                    '<article class="result-item">' +
+                        '<div class="result-bar" style="width:' + share.toFixed(1) + '%"></div>' +
+                        '<div class="result-inner">' +
+                            '<div class="result-head">' +
+                                '<div class="result-label">' +
+                                    '<span class="rank-badge">' + (index + 1) + '位</span>' +
+                                    '<span class="theme-number">' + item.id + '</span>' +
+                                    '<div class="theme-title">' + item.title + '</div>' +
+                                '</div>' +
+                                '<div class="vote-stats">' +
+                                    '<span class="vote-count">' + item.votes + '</span>' +
+                                    '<span class="vote-share">得票率 ' + share.toFixed(1) + '%</span>' +
+                                '</div>' +
                             '</div>' +
-                            '<div class="vote-stats">' +
-                                '<span class="vote-count">' + item.votes + '</span>' +
-                                '<span class="vote-share">得票率 ' + share.toFixed(1) + '%</span>' +
-                            '</div>' +
+                            '<ul class="theme-details">' + detailsHtml + '</ul>' +
+                            '<p class="theme-note">' + item.note + '</p>' +
                         '</div>' +
-                        '<ul class="theme-details">' + detailsHtml + '</ul>' +
-                        '<p class="theme-note">' + item.note + '</p>' +
-                    '</div>' +
-                '</article>'
-            );
-        }).join('');
+                    '</article>'
+                );
+            }).join('');
+        }
+
+        async function loadSurveyExport() {
+            try {
+                const response = await fetch(surveyExportPath, { cache: 'no-store' });
+                if (!response.ok) throw new Error('Failed to load survey export');
+                return await response.json();
+            } catch (error) {
+                console.warn('Falling back to embedded survey export.', error);
+                return fallbackSurveyExport;
+            }
+        }
+
+        loadSurveyExport().then(renderResults).catch(function (error) {
+            console.error('Failed to render survey results.', error);
+            renderResults(fallbackSurveyExport);
+        });
     </script>
 </body>
 </html>

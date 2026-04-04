@@ -3,6 +3,8 @@
 *.swo
 *~
 .env
+.firebase/
+firebase-debug.log
 .cursor/
 Webinar slides/
 gifts/

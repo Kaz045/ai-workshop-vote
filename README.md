@@ -19,6 +19,7 @@
 - `docs/reports/第1回ワークショップ_開催後レポート.md`: 第1回開催後の会員報告ドラフト
 - `.github/workflows/pages.yml`: GitHub Pages デプロイ設定
 - `docs/operations/firebase_api_key_incident_response.md`: Firebase 関連の運用メモ
+- `docs/operations/firebase_cli_management.md`: Firebase CLI 管理ファイルの方針メモ
 - `records/`: 録音・録画・画像などのローカル保管場所（Git 管理外）
 
 ## 現在の状態

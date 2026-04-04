@@ -1,0 +1,12 @@
+{
+  "source": "Firebase Firestore",
+  "project": "ai-workshop-vote",
+  "path": "artifacts/ai-workshop-vote/public/survey_results",
+  "exported_at": "2026-04-04",
+  "data": {
+    "votes_1": 4,
+    "votes_2": 11,
+    "votes_3": 7,
+    "votes_4": 1
+  }
+}

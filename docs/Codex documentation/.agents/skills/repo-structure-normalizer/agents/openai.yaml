@@ -1,0 +1,7 @@
+interface:
+  display_name: "Repo Structure Normalizer"
+  short_description: "Standardize repo docs and structure safely"
+  default_prompt: "Use $repo-structure-normalizer to standardize this project's README, structures.md, and docs without changing code."
+
+policy:
+  allow_implicit_invocation: false
