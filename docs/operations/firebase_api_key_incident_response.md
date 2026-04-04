@@ -11,13 +11,13 @@ Git 履歴に残った Firebase 設定値を前提に、被害防止を最短で
 
 ## GitHub Secrets 更新（ローカルから）
 ```bash
-scripts/security/set_github_firebase_secrets.sh Kaz045/ai-workshop-vote
+scripts/security/set_github_firebase_secrets.sh Kaz045/with-portal
 ```
 
 ## ワークフロー実行
 ```bash
-gh workflow run pages.yml --repo Kaz045/ai-workshop-vote
-gh run watch --repo Kaz045/ai-workshop-vote
+gh workflow run pages.yml --repo Kaz045/with-portal
+gh run watch --repo Kaz045/with-portal
 ```
 
 ## 漏えい履歴の特定（キー値は表示しない）

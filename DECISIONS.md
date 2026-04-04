@@ -49,3 +49,13 @@
 - Why: これまでの成果物を残しつつ、今後の公開物と会員向けアーカイブを迷わず育てられる構造にするため
 - Affected files: `site/`, `archive/`, `README.md`, `STRUCTURE_GUIDE.md`, `TODO.md`, `DECISIONS.md`, `specs/`, `.github/workflows/pages.yml`, `.gitignore`
 - Follow-up: 会員向けページのリンク運用、議事録の外部リンク化、必要に応じた認証強化を今後判断する
+
+## DEC-0005 - GitHub リポジトリ名を `with-portal` に変更する
+
+- Date: 2026-04-05
+- Status: Accepted
+- Context: ローカルフォルダ名と GitHub 上のリポジトリ名が旧投票プロジェクト由来のままで、With ポータルとして分かりにくかった
+- Decision: GitHub リポジトリを `Kaz045/with-portal` にリネームし、GitHub Pages の公開 URL を `https://kaz045.github.io/with-portal/` とする。ローカルの作業ディレクトリ名も `with-portal` に揃える
+- Why: 入口の名前と実体が一致し、会員や協力者が迷いにくくするため
+- Affected files: `README.md`, `TODO.md`, `DECISIONS.md`, `docs/operations/firebase_api_key_incident_response.md`, `scripts/security/set_github_firebase_secrets.sh`, `docs/chatgpt_exports/withポータルデザイン検討.md`, Git remote 設定
+- Follow-up: GitHub の Pages 設定でカスタムドメインを使う場合は、DNS とリポジトリ設定を別途更新する

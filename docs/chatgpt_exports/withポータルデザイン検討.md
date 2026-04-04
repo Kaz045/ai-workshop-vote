@@ -8,7 +8,7 @@
 
 ## Prompt:
 ちょっと公開するウェブページに色々変更したくて、企画書も含めてね、ちょっと色々相談したいんだけど、以下のURLの先って見れる？
-https://kaz045.github.io/ai-workshop-vote/
+https://kaz045.github.io/with-portal/
 
 ## Response:
 結論から言うと、**そのURL自体をブラウザのように完全レンダリングして見ることはできません。**  
@@ -19,9 +19,9 @@ https://kaz045.github.io/ai-workshop-vote/
 ### 現在こちらで確認できている内容
 
 *   リポジトリ  
-    `https://github.com/Kaz045/ai-workshop-vote`
+    `https://github.com/Kaz045/with-portal`
 *   GitHub Pages  
-    `https://kaz045.github.io/ai-workshop-vote/`
+    `https://kaz045.github.io/with-portal/`
 
 このページは
 

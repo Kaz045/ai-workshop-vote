@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-repo="${1:-Kaz045/ai-workshop-vote}"
+repo="${1:-Kaz045/with-portal}"
 
 if ! command -v gh >/dev/null 2>&1; then
   echo "Error: gh CLI is required." >&2

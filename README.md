@@ -56,5 +56,5 @@
 
 ## 公開情報
 
-- GitHub Pages: `https://kaz045.github.io/ai-workshop-vote/`
-- GitHub Repository: `https://github.com/Kaz045/ai-workshop-vote`
+- GitHub Pages: `https://kaz045.github.io/with-portal/`
+- GitHub Repository: `https://github.com/Kaz045/with-portal`

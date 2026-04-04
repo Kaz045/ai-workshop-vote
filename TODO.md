@@ -15,6 +15,7 @@
 - 旧 `index.html`、`html_experiment/`、旧 `specs/`、Firebase 設定を `archive/` へ移動
 - 重い議事録 PDF を Git 管理外の `records/` へ移動
 - GitHub Pages を `site/` デプロイ前提に切り替える準備を実施
+- GitHub リポジトリ名を `with-portal` に変更し、ドキュメント上の URL を同期
 
 ## In Progress
 
@@ -40,7 +41,6 @@
 
 - Firebase ベースのライブ投票再開
 - 厳格なユーザー認証を前提にした会員ポータル化
-- リポジトリ名や公開 URL の変更
 
 ## Reference
 
